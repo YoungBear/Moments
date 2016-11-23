@@ -58,8 +58,8 @@ public class TweetAdapter extends BaseAdapter {
             holder.item_img_avatar = (ImageView) convertView.findViewById(R.id.item_img_avatar);
             holder.item_txt_username = (TextView) convertView.findViewById(item_txt_username);
             holder.item_txt_content = (TextView) convertView.findViewById(R.id.item_txt_content);
-            holder.item_img_test = (ImageView) convertView.findViewById(R.id.item_img_test);
-            holder.item_txt_comment_test = (TextView) convertView.findViewById(R.id.item_txt_comment_test);
+//            holder.item_img_test = (ImageView) convertView.findViewById(R.id.item_img_test);
+//            holder.item_txt_comment_test = (TextView) convertView.findViewById(R.id.item_txt_comment_test);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();

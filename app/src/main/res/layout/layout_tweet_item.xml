@@ -2,7 +2,7 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:layout_margin="10dp"
     android:orientation="horizontal">
     
@@ -10,7 +10,7 @@
         android:id="@+id/item_img_avatar"
         android:layout_width="@dimen/tweet_avatar_width"
         android:layout_height="@dimen/tweet_avatar_height"
-        android:src="@mipmap/ic_launcher"/>
+        />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -22,13 +22,13 @@
             android:id="@+id/item_txt_username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="bearyang"/>
+            />
 
         <TextView
             android:id="@+id/item_txt_content"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="this is a test content"/>
+            />
 
         <ViewStub
             android:id="@+id/item_view_stub"
@@ -57,9 +57,5 @@
 
 
     </LinearLayout>
-
-
-
-
 
 </LinearLayout>

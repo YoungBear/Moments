@@ -40,12 +40,12 @@ public class TweetViewHolder extends RecyclerView.ViewHolder {
         // TODO: 2016/11/23 将multiImageView布局写到item里边
         initSubView(viewStub);
 
-        imgAvatar = (ImageView) viewStub.findViewById(R.id.item_img_avatar);
-        txtUsername = (TextView) viewStub.findViewById(R.id.item_txt_username);
-        txtContent = (TextView) viewStub.findViewById(R.id.item_txt_content);
+        imgAvatar = (ImageView) itemView.findViewById(R.id.item_img_avatar);
+        txtUsername = (TextView) itemView.findViewById(R.id.item_txt_username);
+        txtContent = (TextView) itemView.findViewById(R.id.item_txt_content);
 
-        layoutCommentList = (LinearLayout) viewStub.findViewById(R.id.item_layout_comment_list);
-        mCommentListView = (CommentListView) viewStub.findViewById(R.id.item_comment_listview);
+        layoutCommentList = (LinearLayout) itemView.findViewById(R.id.item_layout_comment_list);
+        mCommentListView = (CommentListView) itemView.findViewById(R.id.item_comment_listview);
 
     }
 

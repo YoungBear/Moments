@@ -2,23 +2,22 @@ package com.example.moments;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.bumptech.glide.Glide;
-import com.example.moments.adapter.TweetAdapter;
+import com.example.moments.adapter.MyAdapter;
 import com.example.moments.bean.TweetBean;
 import com.example.moments.bean.UserBean;
 import com.example.moments.url.UrlValue;
 import com.example.moments.volley.VolleyController;
 import com.google.gson.Gson;
+import com.malinskiy.superrecyclerview.SuperRecyclerView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,15 +30,17 @@ public class MainActivity extends Activity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private ImageView imgProfile;
-    private ImageView imgAvatar;
-    private TextView txtNick;
-    private TextView txtUsername;
-    private ListView listViewTweets;
+    private MyAdapter mAdapter;
 
-    private TweetAdapter mAdapter;
+    //个人信息
+    private UserBean mUserBean;
+    //动态
+    private List<TweetBean> mDatas = new ArrayList<>();
 
-    private List<TweetBean> mTweenList = new ArrayList<>(10);
+
+    private SuperRecyclerView recyclerView;
+    private LinearLayoutManager layoutManager;
+    private SwipeRefreshLayout.OnRefreshListener refreshListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,17 +49,16 @@ public class MainActivity extends Activity {
 
         initViews();
 
-
-
         testRequest();
     }
 
     private void initViews() {
-        imgProfile = (ImageView) findViewById(R.id.img_profile_image);
-        imgAvatar = (ImageView) findViewById(R.id.img_avatar);
-        txtNick = (TextView) findViewById(R.id.txt_nick);
-        txtUsername = (TextView) findViewById(R.id.txt_username);
-        listViewTweets = (ListView) findViewById(R.id.list_view_tweets);
+        recyclerView = (SuperRecyclerView) findViewById(R.id.recyclerView);
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+
+
+
     }
     // TODO: 16/11/20 用户的头像无法访问 
 
@@ -72,16 +72,16 @@ public class MainActivity extends Activity {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            UserBean userBean = getUserBean(response);
-                            Log.d(TAG, "jsonObjectRequest, onResponse, " + userBean.toString());
-                            Glide.with(MainActivity.this)
-                                    .load(userBean.getProfile_image())
-                                    .into(imgProfile);
-                            Glide.with(MainActivity.this)
-                                    .load(userBean.getAvatar())
-                                    .into(imgAvatar);
-                            txtNick.setText(userBean.getNick());
-                            txtUsername.setText(userBean.getUsername());
+                            mUserBean = getUserBean(response);
+                            Log.d(TAG, "jsonObjectRequest, onResponse, " + mUserBean.toString());
+                            if (mAdapter == null) {
+                                mAdapter = new MyAdapter(MainActivity.this);
+                                mAdapter.setUserBean(mUserBean);
+                                recyclerView.setAdapter(mAdapter);
+                            } else {
+                                mAdapter.notifyDataSetChanged();
+
+                            }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -111,25 +111,25 @@ public class MainActivity extends Activity {
                                 TweetBean tweetBean = gson.fromJson(
                                         response.getJSONObject(i).toString(),
                                         TweetBean.class);
-//                                if (tweetBean == null) {
-//                                    continue;
-//                                }
-//                                if (tweetBean.getContent() == null && tweetBean.getImages() == null) {
-//                                    continue;
-//                                }
-                                mTweenList.add(tweetBean);
+                                mDatas.add(tweetBean);
 
-                                Log.d(TAG, "tweetBean: " + tweetBean.getContent()
-                                        + "\n" + tweetBean.getImages()
-                                        + "\n" + tweetBean.getSender()
-                                        + "\n" + tweetBean.getComments());
+
+//                                Log.d(TAG, "tweetBean: " + tweetBean.getContent()
+//                                        + "\n" + tweetBean.getImages()
+//                                        + "\n" + tweetBean.getSender()
+//                                        + "\n" + tweetBean.getComments());
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
                         }
-                        Log.d(TAG, "mTweenList.size(): " + mTweenList.size());
-                        mAdapter = new TweetAdapter(MainActivity.this, mTweenList);
-                        listViewTweets.setAdapter(mAdapter);
+                        Log.d(TAG, "mAdapter == null: " + (mAdapter == null) + ", mDatas.size(): " + mDatas.size());
+                        if (mAdapter != null) {
+                            mAdapter.setDatas(mDatas);
+
+                            mAdapter.notifyDataSetChanged();
+
+                        }
+
                     }
                 },
                 new Response.ErrorListener() {

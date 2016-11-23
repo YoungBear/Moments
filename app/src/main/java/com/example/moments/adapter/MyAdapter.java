@@ -3,6 +3,7 @@ package com.example.moments.adapter;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,8 @@ import java.util.List;
  */
 
 public class MyAdapter extends RecyclerView.Adapter {
+
+    private static final String TAG = MyAdapter.class.getSimpleName();
 
     private final static int TYPE_HEAD = 0;
     private final static int TYPE_COMMON = 1;
@@ -57,6 +60,7 @@ public class MyAdapter extends RecyclerView.Adapter {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        Log.d(TAG, "onCreateViewHolder, viewType: " + viewType);
         RecyclerView.ViewHolder viewHolder;
         if (viewType == TYPE_HEAD) {
             View headView = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_tweet_head_item, parent, false);
@@ -71,6 +75,7 @@ public class MyAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
+        Log.d(TAG, "onBindViewHolder, position: " + position);
         if (getItemViewType(position) == TYPE_HEAD) {
             HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
             if (null != mUserBean) {
@@ -81,7 +86,7 @@ public class MyAdapter extends RecyclerView.Adapter {
         } else {
             int normalPosition = position - 1;
             TweetViewHolder tweetViewHolder = (TweetViewHolder) holder;
-            TweetBean tweetBean = mDatas.get(position);
+            TweetBean tweetBean = mDatas.get(normalPosition);
 
             //忽略空信息
             if (tweetBean == null ||
@@ -90,7 +95,10 @@ public class MyAdapter extends RecyclerView.Adapter {
                 return;
             }
 
-            Glide.with(mContext).load(tweetBean.getSender().getAvatar()).into(tweetViewHolder.imgAvatar);
+
+            // TODO: 16/11/23 暂时使用可访问的图片
+            Glide.with(mContext).load("http://info.thoughtworks.com/rs/thoughtworks2/images/glyph_badge.png").into(tweetViewHolder.imgAvatar);
+//            Glide.with(mContext).load(tweetBean.getSender().getAvatar()).into(tweetViewHolder.imgAvatar);
             tweetViewHolder.txtUsername.setText(tweetBean.getSender().getUsername());
             if (!TextUtils.isEmpty(tweetBean.getContent())) {
                 tweetViewHolder.txtContent.setVisibility(View.VISIBLE);
@@ -99,7 +107,7 @@ public class MyAdapter extends RecyclerView.Adapter {
                 tweetViewHolder.txtContent.setVisibility(View.GONE);
             }
 
-            if (tweetBean.getImages().size() >= 1) {
+            if (tweetBean.getImages() != null && tweetBean.getImages().size() >= 1) {
                 tweetViewHolder.mMultiImageView.setVisibility(View.VISIBLE);
                 List<PhotoInfo> photoList = new ArrayList<>(tweetBean.getImages().size());
                 // TODO: 2016/11/23 处理MultiImageView的宽和高
@@ -113,12 +121,24 @@ public class MyAdapter extends RecyclerView.Adapter {
                 tweetViewHolder.mMultiImageView.setVisibility(View.GONE);
             }
 
+            if (tweetBean.getComments() != null && tweetBean.getComments().size() >= 1) {
+                tweetViewHolder.layoutCommentList.setVisibility(View.VISIBLE);
+                tweetViewHolder.mCommentListView.setDatas(tweetBean.getComments());
+            } else {
+                tweetViewHolder.layoutCommentList.setVisibility(View.GONE);
+            }
+
         }
     }
 
     @Override
     public int getItemCount() {
-        return mDatas.size() + 1;
+        if (mDatas == null && mUserBean != null) {
+            return 1;
+        } else {
+            return mDatas.size() + 1;
+        }
+
     }
 
     @Override
