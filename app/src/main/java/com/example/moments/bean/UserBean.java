@@ -4,7 +4,7 @@ package com.example.moments.bean;
  * Created by youngbear on 16/11/20.
  */
 
-public class UserBean {
+public class UserBean extends BaseBean{
 
 
     /**

@@ -23,8 +23,6 @@
             app:recyclerClipToPadding="true"
             app:scrollbarStyle="outsideOverlay" />
 
-
-
     </RelativeLayout>
 
 </LinearLayout>

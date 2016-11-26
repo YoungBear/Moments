@@ -3,6 +3,6 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
-    <dimen name="tweet_avatar_width">30dp</dimen>
-    <dimen name="tweet_avatar_height">30dp</dimen>
+    <dimen name="tweet_avatar_width">40dp</dimen>
+    <dimen name="tweet_avatar_height">40dp</dimen>
 </resources>

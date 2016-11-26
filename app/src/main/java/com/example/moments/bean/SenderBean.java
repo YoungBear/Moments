@@ -32,4 +32,11 @@ public class SenderBean {
     public void setAvatar(String avatar) {
         this.avatar = avatar;
     }
+
+    @Override
+    public String toString() {
+        return "SenderBean{" +
+                "username='" + username + '\'' +
+                '}';
+    }
 }

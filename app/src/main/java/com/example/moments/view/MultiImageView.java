@@ -2,6 +2,7 @@ package com.example.moments.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -18,12 +19,15 @@ import java.util.List;
  */
 
 public class MultiImageView extends LinearLayout {
+    public static final String TAG = MultiImageView.class.getSimpleName();
     public static int MAX_WIDTH = 0;
 
     // 照片的Url列表
     private List<PhotoInfo> imagesList;
 
-    /** 长度 单位为Pixel **/
+    /**
+     * 长度 单位为Pixel
+     **/
     private int pxOneMaxWandH;  // 单张图最大允许宽高
     private int pxMoreWandH = 0;// 多张图的宽高
     private int pxImagePadding = DensityUtil.dip2px(getContext(), 3);// 图片间的间距
@@ -43,14 +47,15 @@ public class MultiImageView extends LinearLayout {
         super(context, attrs);
     }
 
-    public void setList(List<PhotoInfo> lists) throws IllegalArgumentException{
-        if(lists==null){
+    public void setList(List<PhotoInfo> lists) throws IllegalArgumentException {
+        Log.d(TAG, "setList, lists.size(): " + lists.size() + ", MAX_WIDTH: " + MAX_WIDTH);
+        if (lists == null) {
             throw new IllegalArgumentException("imageList is null...");
         }
         imagesList = lists;
 
-        if(MAX_WIDTH > 0){
-            pxMoreWandH = (MAX_WIDTH - pxImagePadding*2 )/3; //解决右侧图片和内容对不齐问题
+        if (MAX_WIDTH > 0) {
+            pxMoreWandH = (MAX_WIDTH - pxImagePadding * 2) / 3; //解决右侧图片和内容对不齐问题
             pxOneMaxWandH = MAX_WIDTH * 2 / 3;
             initImageLayoutParams();
         }
@@ -60,11 +65,13 @@ public class MultiImageView extends LinearLayout {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        if(MAX_WIDTH == 0){
+        Log.d(TAG, "onMeasure, MAX_WIDTH: " + MAX_WIDTH);
+        if (MAX_WIDTH == 0) {
             int width = measureWidth(widthMeasureSpec);
-            if(width>0){
+            Log.d(TAG, "onMeasure, width: " + width);
+            if (width > 0) {
                 MAX_WIDTH = width;
-                if(imagesList!=null && imagesList.size()>0){
+                if (imagesList != null && imagesList.size() > 0) {
                     setList(imagesList);
                 }
             }
@@ -75,11 +82,11 @@ public class MultiImageView extends LinearLayout {
     /**
      * Determines the width of this view
      *
-     * @param measureSpec
-     *            A measureSpec packed into an int
+     * @param measureSpec A measureSpec packed into an int
      * @return The width of the view, honoring constraints from measureSpec
      */
     private int measureWidth(int measureSpec) {
+        Log.d(TAG, "measureWidth...");
         int result = 0;
         int specMode = MeasureSpec.getMode(measureSpec);
         int specSize = MeasureSpec.getSize(measureSpec);
@@ -115,9 +122,10 @@ public class MultiImageView extends LinearLayout {
 
     // 根据imageView的数量初始化不同的View布局,还要为每一个View作点击效果
     private void initView() {
+        Log.d(TAG, "initView, imagesList.size(): " + imagesList.size() + ", MAX_WIDTH: " + MAX_WIDTH);
         this.setOrientation(VERTICAL);
         this.removeAllViews();
-        if(MAX_WIDTH == 0){
+        if (MAX_WIDTH == 0) {
             //为了触发onMeasure()来测量MultiImageView的最大宽度，MultiImageView的宽设置为match_parent
             addView(new View(getContext()));
             return;
@@ -131,9 +139,9 @@ public class MultiImageView extends LinearLayout {
             addView(createImageView(0, false));
         } else {
             int allCount = imagesList.size();
-            if(allCount == 4){
+            if (allCount == 4) {
                 MAX_PER_ROW_COUNT = 2;
-            }else{
+            } else {
                 MAX_PER_ROW_COUNT = 3;
             }
             int rowCount = allCount / MAX_PER_ROW_COUNT
@@ -166,10 +174,10 @@ public class MultiImageView extends LinearLayout {
     private ImageView createImageView(int position, final boolean isMultiImage) {
         PhotoInfo photoInfo = imagesList.get(position);
         ImageView imageView = new ImageView(getContext());
-        if(isMultiImage){
+        if (isMultiImage) {
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            imageView.setLayoutParams(position % MAX_PER_ROW_COUNT == 0 ?moreParaColumnFirst : morePara);
-        }else {
+            imageView.setLayoutParams(position % MAX_PER_ROW_COUNT == 0 ? moreParaColumnFirst : morePara);
+        } else {
             imageView.setAdjustViewBounds(true);
             imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
             //imageView.setMaxHeight(pxOneMaxWandH);
@@ -177,19 +185,19 @@ public class MultiImageView extends LinearLayout {
             int expectW = photoInfo.w;
             int expectH = photoInfo.h;
 
-            if(expectW == 0 || expectH == 0){
+            if (expectW == 0 || expectH == 0) {
                 imageView.setLayoutParams(onePicPara);
-            }else{
+            } else {
                 int actualW = 0;
                 int actualH = 0;
-                float scale = ((float) expectH)/((float) expectW);
-                if(expectW > pxOneMaxWandH){
+                float scale = ((float) expectH) / ((float) expectW);
+                if (expectW > pxOneMaxWandH) {
                     actualW = pxOneMaxWandH;
-                    actualH = (int)(actualW * scale);
-                } else if(expectW < pxMoreWandH){
+                    actualH = (int) (actualW * scale);
+                } else if (expectW < pxMoreWandH) {
                     actualW = pxMoreWandH;
-                    actualH = (int)(actualW * scale);
-                }else{
+                    actualH = (int) (actualW * scale);
+                } else {
                     actualW = expectW;
                     actualH = expectH;
                 }

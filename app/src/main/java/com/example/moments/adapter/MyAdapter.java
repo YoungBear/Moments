@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.example.moments.R;
 import com.example.moments.adapter.viewholder.TweetViewHolder;
+import com.example.moments.bean.BaseBean;
 import com.example.moments.bean.PhotoInfo;
 import com.example.moments.bean.TweetBean;
 import com.example.moments.bean.UserBean;
@@ -31,10 +32,8 @@ public class MyAdapter extends RecyclerView.Adapter {
     private final static int TYPE_HEAD = 0;
     private final static int TYPE_COMMON = 1;
 
-    //个人信息
-    private UserBean mUserBean;
     //动态
-    private List<TweetBean> mDatas;
+    private List<BaseBean> mDatas;
 
     private Context mContext;
 
@@ -42,19 +41,11 @@ public class MyAdapter extends RecyclerView.Adapter {
         mContext = context;
     }
 
-    public UserBean getUserBean() {
-        return mUserBean;
-    }
-
-    public void setUserBean(UserBean userBean) {
-        mUserBean = userBean;
-    }
-
-    public List<TweetBean> getDatas() {
+    public List<BaseBean> getDatas() {
         return mDatas;
     }
 
-    public void setDatas(List<TweetBean> datas) {
+    public void setDatas(List<BaseBean> datas) {
         mDatas = datas;
     }
 
@@ -74,71 +65,61 @@ public class MyAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-
-        Log.d(TAG, "onBindViewHolder, position: " + position);
+        BaseBean baseBean = mDatas.get(position);
+        Log.d(TAG, "onBindViewHolder, position: " + position + ", baseBean: " + baseBean.toString());
         if (getItemViewType(position) == TYPE_HEAD) {
             HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
-            if (null != mUserBean) {
-                Glide.with(mContext).load(mUserBean.getProfile_image()).into(headerViewHolder.imgProfile);
-                Glide.with(mContext).load(mUserBean.getAvatar()).into(headerViewHolder.imgAvatar);
-                headerViewHolder.txtUsername.setText(mUserBean.getUsername());
+
+            if (baseBean instanceof UserBean) {
+                UserBean userBean = (UserBean) baseBean;
+                Glide.with(mContext).load(userBean.getProfile_image()).into(headerViewHolder.imgProfile);
+                Glide.with(mContext).load(userBean.getAvatar()).into(headerViewHolder.imgAvatar);
+                headerViewHolder.txtUsername.setText(userBean.getUsername());
             }
+
         } else {
-            int normalPosition = position - 1;
             TweetViewHolder tweetViewHolder = (TweetViewHolder) holder;
-            TweetBean tweetBean = mDatas.get(normalPosition);
+            if (baseBean instanceof TweetBean) {
+                TweetBean tweetBean = (TweetBean) baseBean;
 
-            //忽略空信息
-            if (tweetBean == null ||
-                    (TextUtils.isEmpty(tweetBean.getContent()) &&
-                            (tweetBean.getImages() == null || tweetBean.getImages().size() < 1))) {
-                return;
-            }
-
-
-            // TODO: 16/11/23 暂时使用可访问的图片
-            Glide.with(mContext).load("http://info.thoughtworks.com/rs/thoughtworks2/images/glyph_badge.png").into(tweetViewHolder.imgAvatar);
+                // TODO: 16/11/23 暂时使用可访问的图片
+                Glide.with(mContext).load("http://info.thoughtworks.com/rs/thoughtworks2/images/glyph_badge.png").into(tweetViewHolder.imgAvatar);
 //            Glide.with(mContext).load(tweetBean.getSender().getAvatar()).into(tweetViewHolder.imgAvatar);
-            tweetViewHolder.txtUsername.setText(tweetBean.getSender().getUsername());
-            if (!TextUtils.isEmpty(tweetBean.getContent())) {
-                tweetViewHolder.txtContent.setVisibility(View.VISIBLE);
-                tweetViewHolder.txtContent.setText(tweetBean.getContent());
-            } else {
-                tweetViewHolder.txtContent.setVisibility(View.GONE);
-            }
-
-            if (tweetBean.getImages() != null && tweetBean.getImages().size() >= 1) {
-                tweetViewHolder.mMultiImageView.setVisibility(View.VISIBLE);
-                List<PhotoInfo> photoList = new ArrayList<>(tweetBean.getImages().size());
-                // TODO: 2016/11/23 处理MultiImageView的宽和高
-                for (int i = 0; i < tweetBean.getImages().size(); i++) {
-                    PhotoInfo photoInfo = new PhotoInfo();
-                    photoInfo.url = tweetBean.getImages().get(i).getUrl();
-                    photoList.add(photoInfo);
+                tweetViewHolder.txtUsername.setText(tweetBean.getSender().getUsername());
+                if (!TextUtils.isEmpty(tweetBean.getContent())) {
+                    tweetViewHolder.txtContent.setVisibility(View.VISIBLE);
+                    tweetViewHolder.txtContent.setText(tweetBean.getContent());
+                } else {
+                    tweetViewHolder.txtContent.setVisibility(View.GONE);
                 }
-                tweetViewHolder.mMultiImageView.setList(photoList);
-            } else {
-                tweetViewHolder.mMultiImageView.setVisibility(View.GONE);
-            }
 
-            if (tweetBean.getComments() != null && tweetBean.getComments().size() >= 1) {
-                tweetViewHolder.layoutCommentList.setVisibility(View.VISIBLE);
-                tweetViewHolder.mCommentListView.setDatas(tweetBean.getComments());
-            } else {
-                tweetViewHolder.layoutCommentList.setVisibility(View.GONE);
-            }
+                if (tweetBean.getImages() != null && tweetBean.getImages().size() >= 1) {
+                    tweetViewHolder.mMultiImageView.setVisibility(View.VISIBLE);
+                    List<PhotoInfo> photoList = new ArrayList<>(tweetBean.getImages().size());
+                    // TODO: 2016/11/23 处理MultiImageView的宽和高
+                    for (int i = 0; i < tweetBean.getImages().size(); i++) {
+                        PhotoInfo photoInfo = new PhotoInfo();
+                        photoInfo.url = tweetBean.getImages().get(i).getUrl();
+                        photoList.add(photoInfo);
+                    }
+                    tweetViewHolder.mMultiImageView.setList(photoList);
+                } else {
+                    tweetViewHolder.mMultiImageView.setVisibility(View.GONE);
+                }
 
+                if (tweetBean.getComments() != null && tweetBean.getComments().size() >= 1) {
+                    tweetViewHolder.layoutCommentList.setVisibility(View.VISIBLE);
+                    tweetViewHolder.mCommentListView.setDatas(tweetBean.getComments());
+                } else {
+                    tweetViewHolder.layoutCommentList.setVisibility(View.GONE);
+                }
+            }
         }
     }
 
     @Override
     public int getItemCount() {
-        if (mDatas == null && mUserBean != null) {
-            return 1;
-        } else {
-            return mDatas.size() + 1;
-        }
-
+        return mDatas.size();
     }
 
     @Override
@@ -150,7 +131,7 @@ public class MyAdapter extends RecyclerView.Adapter {
         }
     }
 
-    private static class HeaderViewHolder extends RecyclerView.ViewHolder{
+    private static class HeaderViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView imgProfile;
         private ImageView imgAvatar;
