@@ -207,8 +207,8 @@ public class MultiImageView extends LinearLayout {
 
         imageView.setId(photoInfo.url.hashCode());
         // TODO: 16/11/23 暂时使用可访问的图片
-        Glide.with(getContext()).load("http://info.thoughtworks.com/rs/thoughtworks2/images/glyph_badge.png").diskCacheStrategy(DiskCacheStrategy.ALL).into(imageView);
-//        Glide.with(getContext()).load(photoInfo.url).diskCacheStrategy(DiskCacheStrategy.ALL).into(imageView);
+//        Glide.with(getContext()).load("http://info.thoughtworks.com/rs/thoughtworks2/images/glyph_badge.png").diskCacheStrategy(DiskCacheStrategy.ALL).into(imageView);
+        Glide.with(getContext()).load(photoInfo.url).diskCacheStrategy(DiskCacheStrategy.ALL).into(imageView);
 
         return imageView;
     }

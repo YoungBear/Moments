@@ -35,15 +35,12 @@ public class MainActivity extends Activity {
 
     private MyAdapter mAdapter;
 
-
     private List<BaseBean> mDatas = new ArrayList<>();
     private List<TweetBean> tweetBeanList = new ArrayList<>();
     private int mIndex;
 
-
     private SuperRecyclerView recyclerView;
     private LinearLayoutManager layoutManager;
-    private SwipeRefreshLayout.OnRefreshListener refreshListener;
 
     private Handler mHandler;
 
@@ -58,13 +55,18 @@ public class MainActivity extends Activity {
         loadData();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mHandler.removeCallbacks(loadMoreRunnable);
+    }
+
     private void initViews() {
         recyclerView = (SuperRecyclerView) findViewById(R.id.recyclerView);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
         recyclerView.hideProgress();
-
 
         recyclerView.setRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -91,16 +93,14 @@ public class MainActivity extends Activity {
                 super.onScrolled(recyclerView, dx, dy);
             }
         });
-
-
     }
 
     private void loadData() {
         mDatas.clear();
         tweetBeanList.clear();
         profileRequest();
-
     }
+
     private void loadMore(int position) {
         Log.d(TAG, "loadMore, position: " + position + ", mIndex: " + mIndex);
         if (position >= mIndex && position < tweetBeanList.size()) {
@@ -108,7 +108,7 @@ public class MainActivity extends Activity {
             Log.d(TAG, "loadMore, position: " + position);
             recyclerView.showMoreProgress();
             mHandler.removeCallbacks(loadMoreRunnable);
-            mHandler.postDelayed(loadMoreRunnable, 2000);
+            mHandler.postDelayed(loadMoreRunnable, 1000);
         }
 
     }

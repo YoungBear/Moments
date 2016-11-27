@@ -5,7 +5,6 @@ import android.text.TextUtils;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
 
 /**
@@ -17,7 +16,6 @@ public class VolleyController {
 
     private static volatile VolleyController mInstance;
     private RequestQueue mRequestQueue;
-    private ImageLoader mImageLoader;
     private static Context mContext;
 
     private VolleyController(Context context) {

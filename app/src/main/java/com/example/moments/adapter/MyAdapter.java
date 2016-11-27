@@ -83,8 +83,8 @@ public class MyAdapter extends RecyclerView.Adapter {
                 TweetBean tweetBean = (TweetBean) baseBean;
 
                 // TODO: 16/11/23 暂时使用可访问的图片
-                Glide.with(mContext).load("http://info.thoughtworks.com/rs/thoughtworks2/images/glyph_badge.png").into(tweetViewHolder.imgAvatar);
-//            Glide.with(mContext).load(tweetBean.getSender().getAvatar()).into(tweetViewHolder.imgAvatar);
+//                Glide.with(mContext).load("http://info.thoughtworks.com/rs/thoughtworks2/images/glyph_badge.png").into(tweetViewHolder.imgAvatar);
+                Glide.with(mContext).load(tweetBean.getSender().getAvatar()).into(tweetViewHolder.imgAvatar);
                 tweetViewHolder.txtUsername.setText(tweetBean.getSender().getUsername());
                 if (!TextUtils.isEmpty(tweetBean.getContent())) {
                     tweetViewHolder.txtContent.setVisibility(View.VISIBLE);
